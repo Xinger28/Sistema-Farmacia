@@ -1,6 +1,6 @@
 import prisma from '../config/database';
 import { CustomError } from '../middleware/errorHandler';
-import { EstadoTransferencia } from '../generated/prisma/client';
+import { EstadoTransferencia } from '@prisma/client';
 
 interface DetalleTransferenciaDto {
   productoId: number;

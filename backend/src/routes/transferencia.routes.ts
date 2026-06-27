@@ -9,7 +9,7 @@ import {
   enviarTransferenciaSchema,
   recibirTransferenciaSchema,
 } from '../schemas/transferencia.schema';
-import { RolUsuario } from '../generated/prisma/client';
+import { RolUsuario } from '@prisma/client';
 
 const router = Router();
 

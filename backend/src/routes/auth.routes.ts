@@ -3,7 +3,7 @@ import { authController } from '../controllers/auth.controller';
 import { authenticate, authorize } from '../middleware/auth';
 import { validate } from '../middleware/validate';
 import { registerSchema, loginSchema, refreshTokenSchema, changePasswordSchema } from '../schemas/auth.schema';
-import { RolUsuario } from '../generated/prisma/client';
+import { RolUsuario } from '@prisma/client';
 
 const router = Router();
 

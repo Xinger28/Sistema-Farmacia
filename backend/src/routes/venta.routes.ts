@@ -3,7 +3,7 @@ import { ventaController } from '../controllers/venta.controller';
 import { authenticate, authorize } from '../middleware/auth';
 import { validate } from '../middleware/validate';
 import { createVentaSchema, cancelarVentaSchema } from '../schemas/venta.schema';
-import { RolUsuario } from '../generated/prisma/client';
+import { RolUsuario } from '@prisma/client';
 
 const router = Router();
 

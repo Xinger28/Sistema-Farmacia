@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { loteController } from '../controllers/lote.controller';
 import { authenticate, authorize } from '../middleware/auth';
-import { RolUsuario } from '../generated/prisma/client';
+import { RolUsuario } from '@prisma/client';
 
 const router = Router();
 

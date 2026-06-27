@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { transferenciaService } from '../services/transferencia.service';
 import { AuthRequest } from '../types';
 import { parseQueryString, parseIntQuery } from '../utils/query';
-import { EstadoTransferencia } from '../generated/prisma/client';
+import { EstadoTransferencia } from '@prisma/client';
 
 export class TransferenciaController {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { ENV } from '../config/env';
 import { CustomError } from '../middleware/errorHandler';
 import { JwtPayload } from '../types';
-import { RolUsuario } from '../generated/prisma/client';
+import { RolUsuario } from '@prisma/client';
 
 interface RegisterDto {
   nombre: string;

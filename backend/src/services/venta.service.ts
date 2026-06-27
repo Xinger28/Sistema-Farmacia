@@ -1,6 +1,6 @@
 import prisma from '../config/database';
 import { CustomError } from '../middleware/errorHandler';
-import { MetodoPago } from '../generated/prisma/client';
+import { MetodoPago } from '@prisma/client';
 
 interface DetalleVentaDto {
   productoId: number;

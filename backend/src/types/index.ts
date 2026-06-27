@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { RolUsuario } from '../generated/prisma/client';
+import { RolUsuario } from '@prisma/client';
 
 export interface JwtPayload {
   userId: number;

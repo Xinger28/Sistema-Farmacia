@@ -1,6 +1,6 @@
 import prisma from '../config/database';
 import { CustomError } from '../middleware/errorHandler';
-import { PrismaClient } from '../generated/prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 interface CreateLoteDto {
   productoId: number;

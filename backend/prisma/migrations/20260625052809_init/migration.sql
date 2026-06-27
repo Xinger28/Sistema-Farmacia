@@ -303,33 +303,32 @@ ALTER TABLE "detalle_transferencias" ADD CONSTRAINT "detalle_transferencias_prod
 -- AddForeignKey
 ALTER TABLE "detalle_transferencias" ADD CONSTRAINT "detalle_transferencias_lote_id_fkey" FOREIGN KEY ("lote_id") REFERENCES "lotes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
+-- CreateEnum: TipoIngrediente (IF NOT EXISTS para no fallar si ya existe)
+DO $$ BEGIN
+  CREATE TYPE "TipoIngrediente" AS ENUM ('ACTIVO', 'EXCIPIENTE');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
--- Migration: add composicion_producto table
--- Run this against your PostgreSQL database after deploying the updated schema
-
--- CreateEnum
-CREATE TYPE "TipoIngrediente" AS ENUM ('ACTIVO', 'EXCIPIENTE');
-
--- CreateTable
-CREATE TABLE "composicion_producto" (
-    "id"            SERIAL          NOT NULL,
-    "producto_id"   INTEGER         NOT NULL,
-    "ingrediente"   VARCHAR(200)    NOT NULL,
+-- CreateTable: composicion_producto
+CREATE TABLE IF NOT EXISTS "composicion_producto" (
+    "id"            SERIAL              NOT NULL,
+    "producto_id"   INTEGER             NOT NULL,
+    "ingrediente"   VARCHAR(200)        NOT NULL,
     "concentracion" VARCHAR(100),
-    "tipo"          "TipoIngrediente" NOT NULL DEFAULT 'ACTIVO',
-    "orden"         INTEGER         NOT NULL DEFAULT 0,
-    "created_at"    TIMESTAMP(3)    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
+    "tipo"          "TipoIngrediente"   NOT NULL DEFAULT 'ACTIVO',
+    "orden"         INTEGER             NOT NULL DEFAULT 0,
+    "created_at"    TIMESTAMP(3)        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "composicion_producto_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE INDEX "composicion_producto_producto_id_idx" ON "composicion_producto"("producto_id");
-CREATE INDEX "composicion_producto_ingrediente_idx" ON "composicion_producto"("ingrediente");
+CREATE INDEX IF NOT EXISTS "composicion_producto_producto_id_idx" ON "composicion_producto"("producto_id");
+CREATE INDEX IF NOT EXISTS "composicion_producto_ingrediente_idx" ON "composicion_producto"("ingrediente");
 
--- AddForeignKey
+ALTER TABLE "composicion_producto"
+    DROP CONSTRAINT IF EXISTS "composicion_producto_producto_id_fkey";
+
 ALTER TABLE "composicion_producto"
     ADD CONSTRAINT "composicion_producto_producto_id_fkey"
-    FOREIGN KEY ("producto_id")
-    REFERENCES "productos"("id")
+    FOREIGN KEY ("producto_id") REFERENCES "productos"("id")
     ON DELETE CASCADE ON UPDATE CASCADE;
