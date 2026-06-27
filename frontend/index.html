@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Panel de gestión de farmacias: inventario, punto de venta, transferencias entre sucursales y reportes en tiempo real." />
+  <meta name="theme-color" content="#00c7be" />
+  <title>Sistema de Farmacia</title>
+
+  <!-- Favicon SVG inline (cruz médica) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300c7be'/><rect x='13' y='6' width='6' height='20' rx='3' fill='white'/><rect x='6' y='13' width='20' height='6' rx='3' fill='white'/></svg>" />
+
+  <!-- Lucide Icons (CDN) -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- CSS System -->
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+</head>
+<body>
+
+  <!-- SPA root -->
+  <div id="app">
+    <!-- sidebar se inyecta aquí -->
+    <nav id="sidebar" style="display:none;"></nav>
+
+    <!-- contenido de página -->
+    <main id="content">
+      <div class="page-spinner">
+        <span class="spinner spinner-lg"></span>
+        <p>Cargando sistema...</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Core JS (orden importa) -->
+  <script type="module" src="js/api.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/sidebar.js"></script>
+  <script type="module" src="js/router.js"></script>
+
+</body>
+</html>

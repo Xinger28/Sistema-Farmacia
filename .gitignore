@@ -1,0 +1,16 @@
+# Dependencias
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Build
+backend/dist/
+
+# Variables de entorno
+.env
+backend/.env
+
+# Historial del editor
+.history/
+
+README.md/

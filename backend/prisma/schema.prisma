@@ -1,0 +1,285 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =====================================================
+// ENUMS
+// =====================================================
+
+enum RolUsuario {
+  ADMIN
+  GERENTE_SUCURSAL
+  CAJERO
+}
+
+enum EstadoTransferencia {
+  PENDIENTE
+  APROBADA
+  EN_TRANSITO
+  RECIBIDA
+  RECHAZADA
+}
+
+enum MetodoPago {
+  EFECTIVO
+  TARJETA_CREDITO
+  TARJETA_DEBITO
+  TRANSFERENCIA
+}
+
+// =====================================================
+// TABLAS
+// =====================================================
+
+model Sucursal {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @db.VarChar(100)
+  direccion   String   @db.VarChar(255)
+  telefono    String?  @db.VarChar(20)
+  email       String?  @db.VarChar(100)
+  activa      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  usuarios                Usuario[]
+  inventario              InventarioSucursal[]
+  lotes                   Lote[]
+  ventas                  Venta[]
+  transferenciasOrigen    Transferencia[] @relation("TransferenciaOrigen")
+  transferenciasDestino   Transferencia[] @relation("TransferenciaDestino")
+
+  @@map("sucursales")
+}
+
+model Usuario {
+  id            Int         @id @default(autoincrement())
+  nombre        String      @db.VarChar(100)
+  apellido      String      @db.VarChar(100)
+  email         String      @unique @db.VarChar(100)
+  passwordHash  String      @map("password_hash") @db.VarChar(255)
+  rol           RolUsuario
+  sucursalId    Int         @map("sucursal_id")
+  activo        Boolean     @default(true)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  sucursal              Sucursal         @relation(fields: [sucursalId], references: [id])
+  ventas                Venta[]
+  transferenciasSolicita Transferencia[] @relation("UsuarioSolicita")
+  transferenciasAprueba  Transferencia[] @relation("UsuarioAprueba")
+
+  @@index([sucursalId])
+  @@index([rol])
+  @@map("usuarios")
+}
+
+model Laboratorio {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @db.VarChar(150)
+  paisOrigen  String?  @map("pais_origen") @db.VarChar(100)
+  telefono    String?  @db.VarChar(20)
+  email       String?  @db.VarChar(100)
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  productos Producto[]
+
+  @@map("laboratorios")
+}
+
+model Categoria {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @db.VarChar(100)
+  descripcion String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  productos Producto[]
+
+  @@map("categorias")
+}
+
+model Producto {
+  id              Int      @id @default(autoincrement())
+  codigoBarras    String   @unique @map("codigo_barras") @db.VarChar(50)
+  nombre          String   @db.VarChar(200)
+  principioActivo String?  @map("principio_activo") @db.VarChar(200)
+  descripcion     String?
+  laboratorioId   Int?     @map("laboratorio_id")
+  categoriaId     Int?     @map("categoria_id")
+  precioCompra    Decimal  @map("precio_compra") @db.Decimal(10, 2)
+  precioVenta     Decimal  @map("precio_venta") @db.Decimal(10, 2)
+  requiereReceta  Boolean  @default(false) @map("requiere_receta")
+  imagenUrl       String?  @map("imagen_url") @db.VarChar(500)
+  activo          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  laboratorio     Laboratorio?        @relation(fields: [laboratorioId], references: [id])
+  categoria       Categoria?          @relation(fields: [categoriaId], references: [id])
+  inventario      InventarioSucursal[]
+  lotes           Lote[]
+  detalleVentas   DetalleVenta[]
+  detalleTransferencias DetalleTransferencia[]
+  composicion     ComposicionProducto[]
+
+  @@index([codigoBarras])
+  @@index([nombre])
+  @@index([principioActivo])
+  @@map("productos")
+}
+
+// Tipo de ingrediente en la composición
+enum TipoIngrediente {
+  ACTIVO
+  EXCIPIENTE
+}
+
+model ComposicionProducto {
+  id            Int             @id @default(autoincrement())
+  productoId    Int             @map("producto_id")
+  ingrediente   String          @db.VarChar(200)
+  concentracion String?         @db.VarChar(100)  // ej: "500mg", "5%", "0.1 UI"
+  tipo          TipoIngrediente @default(ACTIVO)
+  orden         Int             @default(0)        // orden de visualización
+  createdAt     DateTime        @default(now())    @map("created_at")
+
+  producto  Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+
+  @@index([productoId])
+  @@index([ingrediente])
+  @@map("composicion_producto")
+}
+
+model InventarioSucursal {
+  id          Int      @id @default(autoincrement())
+  productoId  Int      @map("producto_id")
+  sucursalId  Int      @map("sucursal_id")
+  stockActual Int      @default(0) @map("stock_actual")
+  stockMinimo Int      @default(5) @map("stock_minimo")
+  version     Int      @default(1)
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  producto  Producto  @relation(fields: [productoId], references: [id])
+  sucursal  Sucursal  @relation(fields: [sucursalId], references: [id])
+
+  @@unique([productoId, sucursalId])
+  @@index([sucursalId])
+  @@index([productoId])
+  @@map("inventario_sucursal")
+}
+
+model Lote {
+  id                Int      @id @default(autoincrement())
+  productoId        Int      @map("producto_id")
+  sucursalId        Int      @map("sucursal_id")
+  numeroLote        String   @map("numero_lote") @db.VarChar(50)
+  fechaVencimiento  DateTime @map("fecha_vencimiento") @db.Date
+  cantidad          Int
+  precioCompraLote  Decimal? @map("precio_compra_lote") @db.Decimal(10, 2)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  producto          Producto  @relation(fields: [productoId], references: [id])
+  sucursal          Sucursal  @relation(fields: [sucursalId], references: [id])
+  detalleVentas     DetalleVenta[]
+  detalleTransferencias DetalleTransferencia[]
+
+  @@unique([productoId, sucursalId, numeroLote])
+  @@index([fechaVencimiento])
+  @@index([productoId, sucursalId])
+  @@map("lotes")
+}
+
+model Venta {
+  id            Int         @id @default(autoincrement())
+  folio         String      @unique @db.VarChar(20)
+  sucursalId    Int         @map("sucursal_id")
+  usuarioId     Int         @map("usuario_id")
+  subtotal      Decimal     @db.Decimal(12, 2)
+  descuento     Decimal     @default(0) @db.Decimal(10, 2)
+  impuestos     Decimal     @default(0) @db.Decimal(10, 2)
+  total         Decimal     @db.Decimal(12, 2)
+  metodoPago    MetodoPago  @map("metodo_pago")
+  montoRecibido Decimal?    @map("monto_recibido") @db.Decimal(12, 2)
+  cambio        Decimal?    @db.Decimal(10, 2)
+  notas         String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  sucursal      Sucursal    @relation(fields: [sucursalId], references: [id])
+  usuario       Usuario     @relation(fields: [usuarioId], references: [id])
+  detalles      DetalleVenta[]
+
+  @@index([sucursalId])
+  @@index([createdAt])
+  @@index([usuarioId])
+  @@map("ventas")
+}
+
+model DetalleVenta {
+  id              Int     @id @default(autoincrement())
+  ventaId         Int     @map("venta_id")
+  productoId      Int     @map("producto_id")
+  loteId          Int?    @map("lote_id")
+  cantidad        Int
+  precioUnitario  Decimal @map("precio_unitario") @db.Decimal(10, 2)
+  descuento       Decimal @default(0) @db.Decimal(10, 2)
+  subtotal        Decimal @db.Decimal(12, 2)
+
+  venta     Venta     @relation(fields: [ventaId], references: [id], onDelete: Cascade)
+  producto  Producto  @relation(fields: [productoId], references: [id])
+  lote      Lote?     @relation(fields: [loteId], references: [id])
+
+  @@index([ventaId])
+  @@index([productoId])
+  @@map("detalle_ventas")
+}
+
+model Transferencia {
+  id                  Int                 @id @default(autoincrement())
+  folio               String              @unique @db.VarChar(20)
+  sucursalOrigenId    Int                 @map("sucursal_origen_id")
+  sucursalDestinoId   Int                 @map("sucursal_destino_id")
+  usuarioSolicitaId   Int                 @map("usuario_solicita_id")
+  usuarioApruebaId    Int?                @map("usuario_aprueba_id")
+  estado              EstadoTransferencia @default(PENDIENTE)
+  notas               String?
+  fechaSolicitud      DateTime            @default(now()) @map("fecha_solicitud")
+  fechaAprobacion     DateTime?           @map("fecha_aprobacion")
+  fechaEnvio          DateTime?           @map("fecha_envio")
+  fechaRecepcion      DateTime?           @map("fecha_recepcion")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  sucursalOrigen    Sucursal  @relation("TransferenciaOrigen", fields: [sucursalOrigenId], references: [id])
+  sucursalDestino   Sucursal  @relation("TransferenciaDestino", fields: [sucursalDestinoId], references: [id])
+  usuarioSolicita   Usuario   @relation("UsuarioSolicita", fields: [usuarioSolicitaId], references: [id])
+  usuarioAprueba    Usuario?  @relation("UsuarioAprueba", fields: [usuarioApruebaId], references: [id])
+  detalles          DetalleTransferencia[]
+
+  @@index([sucursalOrigenId])
+  @@index([sucursalDestinoId])
+  @@index([estado])
+  @@map("transferencias")
+}
+
+model DetalleTransferencia {
+  id                  Int     @id @default(autoincrement())
+  transferenciaId     Int     @map("transferencia_id")
+  productoId          Int     @map("producto_id")
+  loteId              Int?    @map("lote_id")
+  cantidadSolicitada  Int     @map("cantidad_solicitada")
+  cantidadEnviada     Int     @default(0) @map("cantidad_enviada")
+  cantidadRecibida    Int     @default(0) @map("cantidad_recibida")
+
+  transferencia  Transferencia @relation(fields: [transferenciaId], references: [id], onDelete: Cascade)
+  producto       Producto      @relation(fields: [productoId], references: [id])
+  lote           Lote?         @relation(fields: [loteId], references: [id])
+
+  @@index([transferenciaId])
+  @@map("detalle_transferencias")
+}
