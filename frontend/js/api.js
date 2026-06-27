@@ -3,7 +3,9 @@
  * Reemplaza Axios. Mismo contrato que el servicio anterior.
  */
 
-const BASE_URL = '/api';
+const BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000/api'
+  : 'https://NOMBRE-DE-TU-BACKEND.onrender.com/api';
 
 /**
  * Petición autenticada con fetch nativo.
