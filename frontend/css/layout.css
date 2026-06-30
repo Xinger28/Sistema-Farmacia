@@ -418,9 +418,9 @@
    RESPONSIVE — Móvil y tablet
    ============================================================ */
 
-/* Topbar móvil — NUNCA visible en desktop, solo dentro del breakpoint @768px */
+/* Topbar móvil */
 #mobile-topbar {
-  display: none !important;  /* oculto por defecto en TODOS los tamaños */
+  display: none;
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 3.25rem;
@@ -488,8 +488,8 @@
 /* ── Móvil (< 768px) ── */
 @media (max-width: 768px) {
 
-  /* Mostrar topbar SOLO en móvil cuando tiene clase topbar-visible */
-  #mobile-topbar.topbar-visible {
+  /* Mostrar topbar */
+  #mobile-topbar {
     display: flex !important;
   }
 
@@ -604,4 +604,60 @@
   .page-container { padding: 0.875rem 0.75rem; }
   .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
   .large-title { font-size: 1.375rem !important; }
+}
+
+/* ============================================================
+   TABLAS RESPONSIVAS
+   ============================================================ */
+
+/* Grid de inventario: 6 columnas */
+.table-inventario {
+  display: grid;
+  grid-template-columns: 3fr 1.5fr 1.5fr 0.75fr 0.75fr 1fr;
+}
+
+/* Grid de productos: 7 columnas */
+.table-productos {
+  display: grid;
+  grid-template-columns: 2.5fr 1.5fr 1.2fr 1.2fr 0.8fr 1fr 0.6fr;
+}
+
+/* En móvil: tablas se adaptan ocultando columnas secundarias */
+@media (max-width: 768px) {
+
+  /* Inventario: solo Producto, Stock, Precio, Estado */
+  .table-inventario {
+    grid-template-columns: 2fr 0.6fr 0.8fr 0.9fr;
+  }
+
+  /* Productos: solo Producto, Compra, Venta, Acción */
+  .table-productos {
+    grid-template-columns: 2fr 0.8fr 0.8fr 0.5fr;
+  }
+
+  /* Ocultar columnas secundarias en móvil */
+  .col-hide-sm {
+    display: none !important;
+  }
+
+  /* Scroll horizontal como fallback si aun no cabe */
+  .glass-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-header,
+  .inventory-row {
+    min-width: unset;
+  }
+}
+
+/* En tablet: mostrar algo intermedio */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .table-inventario {
+    grid-template-columns: 2.5fr 1.2fr 1.2fr 0.7fr 0.8fr 1fr;
+  }
+  .table-productos {
+    grid-template-columns: 2fr 1.2fr 1fr 1fr 0.8fr 1fr 0.6fr;
+  }
 }

@@ -229,25 +229,34 @@ export async function render(container) {
 }
 
 async function loadCatalogos() {
+  // Cargar laboratorios y categorías de forma independiente
+  // para que un fallo en uno no bloquee al otro ni a los productos
   try {
-    const [labs, cats] = await Promise.all([
-      laboratorioService.getAll(),
-      categoriaService.getAll(),
-    ]);
-    _laboratorios = labs.data || [];
-    _categorias   = cats.data || [];
-
-    // Llenar selectores del filtro
+    const res = await laboratorioService.getAll();
+    _laboratorios = res.data || [];
     const filterLab = document.getElementById('filter-lab');
-    const filterCat = document.getElementById('filter-cat');
-    _laboratorios.forEach(l => {
-      filterLab.innerHTML += `<option value="${l.id}">${escHtml(l.nombre)}</option>`;
-    });
-    _categorias.forEach(c => {
-      filterCat.innerHTML += `<option value="${c.id}">${escHtml(c.nombre)}</option>`;
-    });
+    if (filterLab) {
+      _laboratorios.forEach(l => {
+        filterLab.innerHTML += `<option value="${l.id}">${escHtml(l.nombre)}</option>`;
+      });
+    }
   } catch (err) {
-    console.error('Error cargando catálogos:', err);
+    console.warn('No se pudieron cargar laboratorios:', err.message);
+    _laboratorios = [];
+  }
+
+  try {
+    const res = await categoriaService.getAll();
+    _categorias = res.data || [];
+    const filterCat = document.getElementById('filter-cat');
+    if (filterCat) {
+      _categorias.forEach(c => {
+        filterCat.innerHTML += `<option value="${c.id}">${escHtml(c.nombre)}</option>`;
+      });
+    }
+  } catch (err) {
+    console.warn('No se pudieron cargar categorías:', err.message);
+    _categorias = [];
   }
 }
 
@@ -298,11 +307,11 @@ function renderTabla() {
   }
 
   tableEl.innerHTML = `
-    <div class="table-header" style="grid-template-columns:2.5fr 1.5fr 1.2fr 1.2fr 0.8fr 1fr 0.6fr; display:grid;">
+    <div class="table-header table-productos">
       <span>Producto</span>
       <span>Código</span>
-      <span>Laboratorio</span>
-      <span>Categoría</span>
+      <span class="col-hide-sm">Laboratorio</span>
+      <span class="col-hide-sm">Categoría</span>
       <span style="text-align:right;">Compra</span>
       <span style="text-align:right;">Venta</span>
       <span style="text-align:center;">Acción</span>
@@ -311,7 +320,7 @@ function renderTabla() {
 
   const rows = _productos.map((p, i) => `
     <div class="inventory-row cell anim-fade-up delay-${Math.min(i % 6, 5)}"
-         style="grid-template-columns:2.5fr 1.5fr 1.2fr 1.2fr 0.8fr 1fr 0.6fr; display:grid; align-items:center;">
+         class="table-productos" style="align-items:center;">
       <div>
         <div style="font-weight:600; font-size:0.8125rem; color:#1c1c1e;">${escHtml(p.nombre)}</div>
         ${p.principioActivo
@@ -327,10 +336,10 @@ function renderTabla() {
           ${escHtml(p.codigoBarras)}
         </span>
       </div>
-      <div style="font-size:0.8125rem; color:#555;">
+      <div class="col-hide-sm" style="font-size:0.8125rem; color:#555;">
         ${p.laboratorio?.nombre ? escHtml(p.laboratorio.nombre) : '<span style="color:var(--ios-gray3);">—</span>'}
       </div>
-      <div style="font-size:0.8125rem; color:#555;">
+      <div class="col-hide-sm" style="font-size:0.8125rem; color:#555;">
         ${p.categoria?.nombre ? escHtml(p.categoria.nombre) : '<span style="color:var(--ios-gray3);">—</span>'}
       </div>
       <div style="text-align:right; font-size:0.8125rem; color:var(--ios-gray2); font-variant-numeric:tabular-nums;">

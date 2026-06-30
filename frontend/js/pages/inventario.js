@@ -174,8 +174,10 @@ function renderTable() {
 
   tableEl.innerHTML = `
     <!-- Encabezado (visible en desktop) -->
-    <div class="table-header" style="grid-template-columns:3fr 1.5fr 1.5fr 0.75fr 0.75fr 1fr; display:grid;">
-      <span>Producto</span><span>Código</span><span>Laboratorio</span>
+    <div class="table-header table-inventario">
+      <span>Producto</span>
+      <span class="col-hide-sm">Código</span>
+      <span class="col-hide-sm">Laboratorio</span>
       <span style="text-align:center;">Stock</span>
       <span style="text-align:right;">Precio</span>
       <span style="text-align:center;">Estado</span>
@@ -195,21 +197,21 @@ function renderTable() {
     const statusLabel  = sinStock ? 'Sin Stock' : bajo ? 'Stock Bajo' : 'Normal';
 
     return `
-      <div class="inventory-row cell anim-fade-up delay-${Math.min(i % 6, 5)}">
+      <div class="inventory-row table-inventario cell anim-fade-up delay-${Math.min(i % 6, 5)}">
         <!-- Producto -->
         <div>
           <div style="font-weight:600; font-size:0.8125rem; color:#1c1c1e;">${escHtml(item.producto.nombre)}</div>
           ${item.producto.categoria ? `<div style="font-size:0.6875rem; color:var(--ios-gray); margin-top:0.1rem;">${escHtml(item.producto.categoria.nombre)}</div>` : ''}
         </div>
         <!-- Código -->
-        <div>
+        <div class="col-hide-sm">
           <span class="mono" style="font-size:0.6875rem; background:rgba(0,0,0,0.04);
                 color:#555; padding:0.125rem 0.5rem; border-radius:0.375rem;">
             ${escHtml(item.producto.codigoBarras)}
           </span>
         </div>
         <!-- Lab -->
-        <div style="font-size:0.8125rem; color:#555;">
+        <div class="col-hide-sm" style="font-size:0.8125rem; color:#555;">
           ${item.producto.laboratorio?.nombre ? escHtml(item.producto.laboratorio.nombre) : '<span style="color:var(--ios-gray3);">—</span>'}
         </div>
         <!-- Stock -->
