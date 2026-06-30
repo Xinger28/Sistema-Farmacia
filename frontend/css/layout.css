@@ -418,9 +418,9 @@
    RESPONSIVE — Móvil y tablet
    ============================================================ */
 
-/* Topbar móvil */
+/* Topbar móvil — NUNCA visible en desktop, solo dentro del breakpoint @768px */
 #mobile-topbar {
-  display: none;
+  display: none !important;  /* oculto por defecto en TODOS los tamaños */
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 3.25rem;
@@ -488,8 +488,8 @@
 /* ── Móvil (< 768px) ── */
 @media (max-width: 768px) {
 
-  /* Mostrar topbar */
-  #mobile-topbar {
+  /* Mostrar topbar SOLO en móvil cuando tiene clase topbar-visible */
+  #mobile-topbar.topbar-visible {
     display: flex !important;
   }
 

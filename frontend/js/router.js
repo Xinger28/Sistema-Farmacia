@@ -2,7 +2,7 @@
  * router.js — Hash-based SPA router con soporte responsive
  */
 import { isLoggedIn } from './auth.js';
-import { renderSidebar, updateSidebarActive, openMobileSidebar } from './sidebar.js';
+import { renderSidebar, updateSidebarActive } from './sidebar.js';
 
 const ROUTES = {
   '#/login':          () => import('./pages/login.js'),
@@ -23,30 +23,25 @@ async function navigate() {
   const content = document.getElementById('content');
   const topbar  = document.getElementById('mobile-topbar');
 
-  // Guard: no logueado → login
   if (!isLoggedIn() && !PUBLIC_ROUTES.has(hash)) {
     window.location.hash = '#/login';
     return;
   }
-
-  // Guard: logueado → dashboard
   if (isLoggedIn() && hash === '#/login') {
     window.location.hash = '#/dashboard';
     return;
   }
 
   if (PUBLIC_ROUTES.has(hash)) {
-    // Ocultar sidebar y topbar en login
-    sidebar.style.display  = 'none';
-    if (topbar) topbar.style.display = 'none';
+    sidebar.style.display = 'none';
+    // Ocultar topbar en login — CSS se encarga en rutas normales
+    topbar?.classList.remove('topbar-visible');
   } else {
-    // Renderizar sidebar (solo 1ª vez, las siguientes solo actualiza activo)
     renderSidebar();
-    // Mostrar topbar móvil
-    if (topbar) topbar.style.display = 'flex';
+    // Solo marcar como visible — CSS decide si se muestra según breakpoint
+    topbar?.classList.add('topbar-visible');
   }
 
-  // Spinner mientras carga
   content.innerHTML = `
     <div class="page-spinner">
       <span class="spinner spinner-lg" style="color:var(--mint-500);"></span>
