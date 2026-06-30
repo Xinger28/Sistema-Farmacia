@@ -307,20 +307,24 @@ function renderTabla() {
   }
 
   tableEl.innerHTML = `
-    <div class="table-header table-productos">
-      <span>Producto</span>
-      <span>Código</span>
-      <span class="col-hide-sm">Laboratorio</span>
-      <span class="col-hide-sm">Categoría</span>
-      <span style="text-align:right;">Compra</span>
-      <span style="text-align:right;">Venta</span>
-      <span style="text-align:center;">Acción</span>
-    </div>
-    <div id="prod-rows"></div>`;
+    <div class="table-scroll-wrap">
+      <div class="table-scroll-inner" style="min-width:50rem;">
+        <div class="table-header" style="grid-template-columns:2.5fr 1.5fr 1.2fr 1.2fr 0.8fr 1fr 0.6fr; display:grid;">
+          <span>Producto</span>
+          <span>Código</span>
+          <span>Laboratorio</span>
+          <span>Categoría</span>
+          <span style="text-align:right;">Compra</span>
+          <span style="text-align:right;">Venta</span>
+          <span style="text-align:center;">Acción</span>
+        </div>
+        <div id="prod-rows"></div>
+      </div>
+    </div>`;
 
   const rows = _productos.map((p, i) => `
     <div class="inventory-row cell anim-fade-up delay-${Math.min(i % 6, 5)}"
-         class="table-productos" style="align-items:center;">
+         style="grid-template-columns:2.5fr 1.5fr 1.2fr 1.2fr 0.8fr 1fr 0.6fr; display:grid; align-items:center;">
       <div>
         <div style="font-weight:600; font-size:0.8125rem; color:#1c1c1e;">${escHtml(p.nombre)}</div>
         ${p.principioActivo
@@ -336,10 +340,10 @@ function renderTabla() {
           ${escHtml(p.codigoBarras)}
         </span>
       </div>
-      <div class="col-hide-sm" style="font-size:0.8125rem; color:#555;">
+      <div style="font-size:0.8125rem; color:#555;">
         ${p.laboratorio?.nombre ? escHtml(p.laboratorio.nombre) : '<span style="color:var(--ios-gray3);">—</span>'}
       </div>
-      <div class="col-hide-sm" style="font-size:0.8125rem; color:#555;">
+      <div style="font-size:0.8125rem; color:#555;">
         ${p.categoria?.nombre ? escHtml(p.categoria.nombre) : '<span style="color:var(--ios-gray3);">—</span>'}
       </div>
       <div style="text-align:right; font-size:0.8125rem; color:var(--ios-gray2); font-variant-numeric:tabular-nums;">

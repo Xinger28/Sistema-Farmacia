@@ -661,3 +661,46 @@
     grid-template-columns: 2fr 1.2fr 1fr 1fr 0.8fr 1fr 0.6fr;
   }
 }
+
+/* ============================================================
+   TABLAS — SCROLL HORIZONTAL EN PANTALLAS PEQUEÑAS
+   ============================================================ */
+
+/* Wrapper con scroll — aplica al glass-card que contiene tablas */
+.table-scroll-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Indicador visual de scroll en móvil */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.15) transparent;
+}
+.table-scroll-wrap::-webkit-scrollbar {
+  height: 4px;
+}
+.table-scroll-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+.table-scroll-wrap::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+  border-radius: 2px;
+}
+
+/* Ancho mínimo para que las columnas no se compriman */
+.table-scroll-inner {
+  min-width: 42rem;
+}
+
+@media (max-width: 768px) {
+  /* Paginación apilada en móvil */
+  #paginacion {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start !important;
+  }
+
+  /* Filtros apilados */
+  #filter-lab, #filter-cat {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+}
