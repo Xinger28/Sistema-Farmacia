@@ -1,9 +1,8 @@
 /**
- * router.js — Hash-based SPA router
- * Rutas: #/login  #/dashboard  #/inventario  #/pos  #/transferencias
+ * router.js — Hash-based SPA router con soporte responsive
  */
 import { isLoggedIn } from './auth.js';
-import { renderSidebar, updateSidebarActive } from './sidebar.js';
+import { renderSidebar, updateSidebarActive, openMobileSidebar } from './sidebar.js';
 
 const ROUTES = {
   '#/login':          () => import('./pages/login.js'),
@@ -19,41 +18,43 @@ const ROUTES = {
 const PUBLIC_ROUTES = new Set(['#/login']);
 
 async function navigate() {
-  const hash = window.location.hash || '#/dashboard';
+  const hash    = window.location.hash || '#/dashboard';
   const sidebar = document.getElementById('sidebar');
   const content = document.getElementById('content');
+  const topbar  = document.getElementById('mobile-topbar');
 
-  // Guard: si no está logueado y la ruta es privada → login
+  // Guard: no logueado → login
   if (!isLoggedIn() && !PUBLIC_ROUTES.has(hash)) {
     window.location.hash = '#/login';
     return;
   }
 
-  // Guard: si está logueado y va a /login → dashboard
+  // Guard: logueado → dashboard
   if (isLoggedIn() && hash === '#/login') {
     window.location.hash = '#/dashboard';
     return;
   }
 
-  // Mostrar / ocultar sidebar
   if (PUBLIC_ROUTES.has(hash)) {
-    sidebar.style.display = 'none';
+    // Ocultar sidebar y topbar en login
+    sidebar.style.display  = 'none';
+    if (topbar) topbar.style.display = 'none';
   } else {
+    // Renderizar sidebar (solo 1ª vez, las siguientes solo actualiza activo)
     renderSidebar();
-    updateSidebarActive();
+    // Mostrar topbar móvil
+    if (topbar) topbar.style.display = 'flex';
   }
 
-  // Mostrar spinner mientras carga la página
+  // Spinner mientras carga
   content.innerHTML = `
     <div class="page-spinner">
       <span class="spinner spinner-lg" style="color:var(--mint-500);"></span>
       <p>Cargando...</p>
     </div>`;
 
-  // Cargar módulo de página
   const loader = ROUTES[hash];
   if (!loader) {
-    // Ruta no encontrada → dashboard
     window.location.hash = isLoggedIn() ? '#/dashboard' : '#/login';
     return;
   }
@@ -73,8 +74,5 @@ async function navigate() {
   }
 }
 
-// Escuchar cambios de hash
 window.addEventListener('hashchange', navigate);
-
-// Navegación inicial
 navigate();

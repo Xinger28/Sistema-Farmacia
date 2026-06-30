@@ -413,3 +413,195 @@
   margin-top: 1.25rem;
   letter-spacing: -0.01em;
 }
+
+/* ============================================================
+   RESPONSIVE — Móvil y tablet
+   ============================================================ */
+
+/* Topbar móvil */
+#mobile-topbar {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3.25rem;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  z-index: 200;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+
+#hamburger-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.375rem;
+  border-radius: 0.5rem;
+  color: #1c1c1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#hamburger-btn:hover { background: rgba(0,0,0,0.06); }
+
+/* Overlay para cerrar sidebar en móvil */
+#sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(2px);
+  z-index: 299;
+}
+
+/* Botón X dentro del sidebar (solo visible en móvil) */
+.sidebar-close-btn {
+  display: none;
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(0,0,0,0.06);
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  color: #3a3a3c;
+  z-index: 10;
+}
+
+/* ── Tablet (< 1024px) ── */
+@media (max-width: 1024px) {
+  .page-container {
+    padding: 1.5rem 1.25rem;
+  }
+  #pos-payment-col {
+    width: 16rem;
+  }
+}
+
+/* ── Móvil (< 768px) ── */
+@media (max-width: 768px) {
+
+  /* Mostrar topbar */
+  #mobile-topbar {
+    display: flex !important;
+  }
+
+  /* App empuja hacia abajo por el topbar */
+  #app {
+    padding-top: 3.25rem;
+    flex-direction: column;
+  }
+
+  /* Sidebar se convierte en drawer lateral */
+  #sidebar {
+    position: fixed !important;
+    top: 0; left: 0;
+    width: 17rem !important;
+    height: 100vh !important;
+    z-index: 300;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
+  }
+
+  /* Sidebar abierto */
+  #sidebar.sidebar-open {
+    transform: translateX(0);
+    box-shadow: 4px 0 32px rgba(0,0,0,0.18);
+  }
+
+  /* Mostrar overlay y X al abrir */
+  #sidebar.sidebar-open ~ #sidebar-overlay,
+  #sidebar-overlay.visible {
+    display: block;
+  }
+
+  /* Mostrar botón X */
+  .sidebar-close-btn {
+    display: flex;
+  }
+
+  /* Contenido ocupa todo el ancho */
+  #content {
+    width: 100%;
+    height: calc(100vh - 3.25rem);
+  }
+
+  /* Padding reducido */
+  .page-container {
+    padding: 1rem 0.875rem;
+  }
+
+  /* Headers */
+  .page-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  /* Stats grid: 2 columnas en móvil */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  /* Tablas: scroll horizontal */
+  .glass-card { overflow-x: auto; }
+  .table-header,
+  .inventory-row {
+    min-width: 40rem;
+  }
+
+  /* POS en móvil: columna única */
+  #pos-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 3.25rem);
+  }
+  #pos-payment-col {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* Modales: full screen en móvil */
+  .glass-card[style*="max-width:36rem"],
+  .glass-card[style*="max-width:34rem"] {
+    max-width: 100% !important;
+    border-radius: 1rem 1rem 0 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    max-height: 92vh !important;
+  }
+
+  /* Grids de 2 columnas → 1 columna */
+  div[style*="grid-template-columns:1fr 1fr"],
+  div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Botones pequeños más fáciles de tocar */
+  .btn-sm { min-height: 2.25rem; }
+
+  /* Segmented control scroll */
+  .segmented {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+}
+
+/* ── Extra pequeño (< 400px) ── */
+@media (max-width: 400px) {
+  .page-container { padding: 0.875rem 0.75rem; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .large-title { font-size: 1.375rem !important; }
+}
